@@ -31,18 +31,26 @@
 
 Document your development process with **minimum 3 entries** showing progression:
 
-### Entry 1 - [Date, Time]
-**What I implemented**: 
+### Entry 1 - May 6, 2026, 6:30 PM
 
-**Challenges encountered**: 
+What I implemented: 
 
-**How I solved it**: 
+I reviewed the original scheduler simulation code and identified the shared resources that needed synchronization. These included contextSwitchCount, completedProcessCount, totalWaitingTime, and executionLog.
 
-**Testing approach**: 
+Challenges encountered: 
 
-**Time spent**: 
+The main challenge was understanding which parts of the code could cause race conditions when multiple threads access them.
 
----
+How I solved it: 
+
+I marked the shared counters and the shared ArrayList as critical sections that need protection.
+
+Testing approach: 
+
+I checked where each shared variable was updated in the code and planned which synchronization mechanism should protect it.
+
+**Time spent: 30 min
+
 
 ### Entry 2 - [Date, Time]
 **What I implemented**: 
