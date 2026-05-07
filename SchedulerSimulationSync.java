@@ -32,7 +32,12 @@ class SharedResources {
     // TODO: Students will add synchronization mechanisms here
     // HINT: Use ReentrantLock for mutual exclusion
     // HINT: Use Semaphore for limiting concurrent access
+       public static final ReentrantLock contextSwitchLock = new ReentrantLock();
+    public static final ReentrantLock completedProcessLock = new ReentrantLock();
+    public static final ReentrantLock waitingTimeLock = new ReentrantLock();
+    public static final ReentrantLock logLock = new ReentrantLock();
     
+
     public static int contextSwitchCount = 0;      // Shared counter - NEEDS PROTECTION!
     public static int completedProcessCount = 0;   // Shared counter - NEEDS PROTECTION!
     public static long totalWaitingTime = 0;       // Shared accumulator - NEEDS PROTECTION!
@@ -48,7 +53,15 @@ class SharedResources {
     public static void incrementContextSwitch() {
         // TODO: Protect this critical section with a lock
         // RACE CONDITION: Multiple threads might read and write simultaneously!
-        contextSwitchCount++;
+               contextSwitchLock.lock();
+        try {
+            contextSwitchCount++;
+        } finally {
+            contextSwitchLock.unlock();
+        }
+    }
+    
+
     }
     
     // Method to increment completed process counter
