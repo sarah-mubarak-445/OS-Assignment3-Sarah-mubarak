@@ -138,7 +138,7 @@ Time spent:
 Two race conditions in the original code were related to the shared counters and the execution log. The first race condition affects the shared counter variables contextSwitchCount, completedProcessCount, and totalWaitingTime. Concurrent access is a problem because multiple process threads may read and update the same variable at the same time, so one update could overwrite another update. For example, if two threads execute contextSwitchCount++ at the same time, both may read the same old value and only one increment will be saved. The second race condition affects executionLog, which is an ArrayList. Since ArrayList is not thread-safe, multiple threads adding log messages at the same time could cause missing log entries or inconsistent data.
 ### Question 2: Locks vs Semaphores
 **Q**: Explain the difference between ReentrantLock and Semaphore. Where did you use each in your code and why?
-
+ReentrantLock is used for mutual exclusion, meaning it protects a critical section so only one thread can access a shared resource at a time. Semaphore is used to control how many threads can access a limited resource by using permits. In my code, I used ReentrantLock to protect the shared counters: contextSwitchCount, completedProcessCount, and totalWaitingTime. I also used another ReentrantLock called logLock to protect the shared executionLog list. I used Semaphore for CPU access by creating cpuSemaphore = new Semaphore(1). Since the semaphore has only one permit, it works like a binary semaphore and allows only one process to enter the CPU execution section at a time.
 
 ---
 
