@@ -147,7 +147,7 @@ ReentrantLock is used for mutual exclusion, meaning it protects a critical secti
 
 **Your Answer**:
 
-[Your answer here - reference try-finally blocks, lock ordering, etc.]
+Deadlock happens when two or more threads wait for each other forever, so none of them can continue execution. One prevention technique is to always release locks and semaphores inside a finally block. In my code, every ReentrantLock is unlocked inside finally, such as contextSwitchLock.unlock() and logLock.unlock(). I also release the CPU semaphore inside a finally block using SharedResources.cpuSemaphore.release(), so the CPU permit is returned even if an error happens. Another prevention technique is to avoid holding multiple locks at the same time when it is not necessary. My code uses small critical sections and separate methods for each shared resource, which reduces the chance of deadlock.
 
 ---
 
