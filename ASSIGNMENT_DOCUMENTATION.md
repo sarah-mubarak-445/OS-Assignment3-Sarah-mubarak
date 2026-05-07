@@ -382,17 +382,14 @@ Synchronization is like using a key for a shared room. If many people want to en
 
 ## Summary
 
-**Total time spent on assignment**: 
-
-**Key takeaways**: 
-1. 
-2. 
-3. 
-
-**Most challenging aspect**: 
-
-**What I'm most proud of**: 
-
+**Total time spent on assignment**:  Approximately 5 hours.
+**Key takeaways**:
+ 1. I learned how to protect shared variables using `ReentrantLock` to prevent race conditions.
+ 2. I learned how to use `Semaphore` to control access to a limited resource such as the CPU.
+ 3. I learned that using `try-finally` is important to make sure locks and semaphores are always released.
+**Most challenging aspect**:  The most challenging aspect was understanding where the critical sections were and deciding which shared resources needed synchronization.
+ It was also challenging to fix errors related to the main class, package name, and running the project in Maven/NetBeans.
+**What I'm most proud of**:  I am most proud of completing the synchronization tasks successfully and getting the program to run until all processes completed. The final output showed that all 16 processes finished, and the synchronization statistics were printed correctly.
 ---
 
 **End of Documentation**
