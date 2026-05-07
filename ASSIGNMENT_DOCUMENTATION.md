@@ -348,25 +348,21 @@ I learned that synchronization is important when multiple threads share counters
 
 ### What I learned about synchronization:
 
-[6-8 sentences about key concepts, challenges, insights]
+I learned that synchronization is important when multiple threads access the same shared resources. Without synchronization, race conditions can happen and the final values may become incorrect. I learned that `ReentrantLock` can be used to protect critical sections such as shared counters and shared lists. I also learned that `Semaphore` can be used to control access to a limited resource, such as the simulated CPU in my program. One important concept I learned is that locks and semaphores should be released inside a `finally` block to prevent deadlocks. I also learned the difference between fine-grained locking and coarse-grained locking. Fine-grained locking gives better concurrency when the shared resources are independent. This assignment helped me understand how thread safety is used in real programs.
 
 ---
 
 ### Real-world applications:
 
-Give TWO examples where synchronization is critical:
+**Example 1**: Banking systems need synchronization when multiple transactions update the same account balance at the same time. Without synchronization, two withdrawals or deposits could happen incorrectly and the final balance may be wrong.
 
-**Example 1**: 
-
-**Example 2**: 
+**Example 2**: Online booking systems need synchronization when many users try to reserve the same seat, hotel room, or appointment slot. Synchronization prevents two users from booking the same resource at the same time.
 
 ---
 
 ### How I would explain synchronization to others:
 
-[Explain to someone who just finished Assignment 1 - use simple terms and analogies]
-
----
+Synchronization is like using a key for a shared room. If many people want to enter the room and change something inside, only one person should enter at a time so nothing gets mixed up. In Java, a lock works like that key. A thread locks the resource, finishes its work, and then unlocks it so another thread can use it. A semaphore is similar, but it controls how many threads are allowed to enter at once. In my program, the CPU semaphore has only one permit, so only one process can use the CPU section at a time.
 
 ## Part 6: GitHub Repository Information
 
