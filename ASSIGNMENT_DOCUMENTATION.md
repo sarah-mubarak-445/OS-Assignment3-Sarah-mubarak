@@ -159,8 +159,7 @@ Deadlock happens when two or more threads wait for each other forever, so none o
 - Given that the three counters are independent, which approach provides better concurrency and why?
 
 **Your Answer**:
-
-[Your answer here - explain coarse-grained vs fine-grained locking, independence of counters, concurrency implications. Show understanding of when to use each approach. 5-8 sentences expected.]
+contextSwitchLock for contextSwitchCount, completedProcessLock for completedProcessCount, and waitingTimeLock for totalWaitingTime. I chose this design because the three counters are independent and do not depend on each other. The advantage of fine-grained locking is that it allows better concurrency because different threads can update different counters without blocking each other unnecessarily. The disadvantage is that it adds more locks, so the code is slightly more complex. A coarse-grained approach would use one lock for all three counters, which is simpler but can reduce performance because every counter update would wait for the same lock. Since the counters are independent, fine-grained locking provides better concurrency and is the better choice for this program.
 
 ---
 
