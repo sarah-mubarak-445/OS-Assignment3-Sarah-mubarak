@@ -52,16 +52,27 @@ I checked where each shared variable was updated in the code and planned which s
 **Time spent: 30 min
 
 
-### Entry 2 - [Date, Time]
-**What I implemented**: 
+### Entry 2 - May 6, 2026, 7:00 PM
 
-**Challenges encountered**: 
+What I implemented: 
 
-**How I solved it**: 
+I added ReentrantLock objects to protect the shared counter variables. I used contextSwitchLock for contextSwitchCount, completedProcessLock for completedProcessCount, and waitingTimeLock for totalWaitingTime.
 
-**Testing approach**: 
+Challenges encountered: 
 
-**Time spent**: 
+I had to decide whether to use one lock for all counters or separate locks for each counter.
+
+How I solved it: 
+
+I used separate locks because the counters are independent from each other. This provides better concurrency than using one lock for all counters.
+
+Testing approach: 
+
+I checked that each counter update was placed inside a lock() and unlock() block using try-finally.
+
+Time spent: 
+
+40 minutes
 
 ---
 
