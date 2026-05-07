@@ -168,15 +168,48 @@ contextSwitchLock for contextSwitchCount, completedProcessLock for completedProc
 ### Critical Section #1: Counter Variables
 
 **Which variables**: 
-
+contextSwitchCount, completedProcessCount, and totalWaitingTime
 **Why they need protection**: 
 
+These variables are shared between process threads. If multiple threads update them at the same time, race conditions can happen. For example, two threads may read the same value before either one writes the updated value, which can cause a lost update and incorrect final statistics.
 **Synchronization mechanism used**: 
-
+ReentrantLock.
 **Code snippet**:
 ```java
-// Paste your implementation here
-```
+public static final ReentrantLock contextSwitchLock = new ReentrantLock();
+public static final ReentrantLock completedProcessLock = new ReentrantLock();
+public static final ReentrantLock waitingTimeLock = new ReentrantLock();
+
+public static int contextSwitchCount = 0;
+public static int completedProcessCount = 0;
+public static long totalWaitingTime = 0;
+
+public static void incrementContextSwitch() {
+    contextSwitchLock.lock();
+    try {
+        contextSwitchCount++;
+    } finally {
+        contextSwitchLock.unlock();
+    }
+}
+
+public static void incrementCompletedProcess() {
+    completedProcessLock.lock();
+    try {
+        completedProcessCount++;
+    } finally {
+        completedProcessLock.unlock();
+    }
+}
+
+public static void addWaitingTime(long time) {
+    waitingTimeLock.lock();
+    try {
+        totalWaitingTime += time;
+    } finally {
+        waitingTimeLock.unlock();
+    }
+}
 
 **Justification**: 
 
@@ -197,20 +230,47 @@ contextSwitchLock for contextSwitchCount, completedProcessLock for completedProc
 
 **Justification**: 
 
+I used separate locks for the three counters because they are independent from each other. This prevents race conditions while still allowing better concurrency than using one lock for all counters. The finally block guarantees that each lock is released after the update.
 ---
 
 ### Critical Section #3: CPU Semaphore
 
 **Purpose of semaphore**: 
-
+The semaphore controls access to the simulated CPU execution section.
 **Number of permits and why**: 
+The semaphore has one permit:
+new Semaphore(1)
 
+execuThis means only one process can enter the CPU section at a time. This matches the idea of a single CPU resource in the simulation.
+
+tionLog is an ArrayList, and ArrayList is not thread-safe. If multiple process threads try to add log messages at the same time, the list could become inconsistent or lose some log entries.
 **Where implemented**: 
-
+The semaphore is declared in SharedResources and used in the run() method and the runToCompletion() method.
 **Code snippet**:
 ```java
 // Paste your implementation here
-```
+```public static final Semaphore cpuSemaphore = new Semaphore(1);
+public void runToCompletion() {
+    try {
+        SharedResources.cpuSemaphore.acquire();
+        try {
+            // last process runs until completion
+
+            Thread.sleep(remainingTime);
+            remainingTime = 0;
+            completionTime = System.currentTimeMillis();
+
+            long waitingTime = (completionTime - creationTime) - burstTime;
+            SharedResources.addWaitingTime(waitingTime);
+            SharedResources.incrementCompletedProcess();
+
+        } finally {
+            SharedResources.cpuSemaphore.release();
+        }
+    } catch (InterruptedException e) {
+        System.out.println(Colors.RED + "  ✗ " + name + " was interrupted." + Colors.RESET);
+    }
+}
 
 **Effect on program behavior**: 
 
@@ -219,53 +279,68 @@ contextSwitchLock for contextSwitchCount, completedProcessLock for completedProc
 ## Part 4: Testing and Verification (2 marks)
 
 ### Test 1: Consistency Check
+
 **What I tested**: Running program multiple times to verify consistent results
 
 **Testing procedure**: 
 ```bash
-# Commands used (run the program at least 5 times)
+mvn clean compile exec:java
+mvn clean compile exec:java
+mvn clean compile exec:java
+mvn clean compile exec:java
+mvn clean compile exec:java
 ```
 
 **Results**: 
 (Show that running multiple times produces consistent, correct results)
 
+I ran the program multiple times using the same student ID, 445052140. The program consistently generated 16 processes with a time quantum of 4000ms. In the final output, all processes completed successfully.
 **Why synchronization is necessary**: 
 (Explain what race conditions COULD occur without synchronization, even if you didn't observe them. Explain which shared resources need protection and why.)
 
 **Conclusion**: 
 
+The program ran successfully and produced correct final statistics. The completed process count matched the total number of processes, and the program finished without synchronization errors. This shows that the ReentrantLock objects and the Semaphore helped protect shared resources and control CPU access correctly.
 ---
 
 ### Test 2: Exception Testing
-**What I tested**: Checking for ConcurrentModificationException
+
+**What I tested**: Checking whether the program runs without thread-related exceptions, especially errors related to the shared `executionLog`.
 
 **Testing procedure**: 
+```bash
+mvn clean compile exec:java
+mvn clean compile exec:java
+mvn clean compile exec:java
+mvn clean compile exec:java
+mvn clean compile exec:java
 
-**Results**: 
 
-**What this proves**: 
+What this proves:
+This proves that the shared executionLog was protected correctly using logLock. It also shows that the locks and semaphore were released correctly using finally blocks, so the program did not get stuck or crash during execution. 
 
 ---
+Test 3: Correctness Verification
+What I tested: Verifying correct final values, including completed processes, context switches, waiting time, and average waiting time.
 
-### Test 3: Correctness Verification
-**What I tested**: Verifying correct final values (total burst time, context switches, etc.)
+Expected values:
+The total completed processes should equal the number of generated processes. Since the output showed that the program generated 16 processes, the expected completed process count is 16. The context switch count should increase each time a process gets CPU time. The waiting time and average waiting time should be calculated and printed at the end.
 
-**Expected values**: 
-
-**Actual values**: 
-
-**Analysis**: 
-
+Analysis:
+The actual completed process count is 16, which matches the number of generated processes. This means all processes finished successfully. The total context switches value is 37, which shows that many processes needed more than one CPU quantum because their burst time was larger than the time quantum. The waiting time and average waiting time were printed correctly in the final statistics, which confirms that totalWaitingTime was updated through the synchronized method.
 ---
 
 ### Test 4: Different Scenarios
-**Scenario tested**: [e.g., different time quantum, more processes, etc.]
+Scenario tested: Running the program with multiple processes generated from student ID 445052140.
 
-**Purpose**: 
+Purpose:
+The purpose was to test the scheduler with different burst times, different priorities, and multiple rounds of CPU execution. This checks whether the synchronization still works when processes have different execution lengths.
 
-**Results**: 
+Results:
+The program generated 16 processes with a time quantum of 4000ms. The processes had different burst times and priorities. Some processes finished in one quantum, while others yielded the CPU and were added back to the ready queue. At the end, all 16 processes completed successfully.
 
-**What I learned**: 
+What I learned:
+I learned that synchronization is important when multiple threads share counters, logs, and CPU access. The ReentrantLock objects protected the shared statistics and execution log. The Semaphore controlled CPU access and allowed only one process to execute in the CPU section at a time. This made the simulation safer and prevented race conditions.
 
 ---
 
