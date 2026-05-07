@@ -371,10 +371,12 @@ Synchronization is like using a key for a shared room. If many people want to en
 **Number of commits**: 
 17
 **Commit messages**: 
-1. 
-2. 
-3. 
-4. 
+1. update mu  studant ID
+
+2. task3: add semaphore to control concurrent cpu
+3. Task2: protect logExecution method
+4. task1: Add ReentrantLock
+
 
 ---
 
