@@ -76,17 +76,27 @@ Time spent:
 
 ---
 
-### Entry 3 - [Date, Time]
-**What I implemented**: 
+### Entry 3 - May 7, 2026, 7:45 PM
 
-**Challenges encountered**: 
+What I implemented: 
 
-**How I solved it**: 
+I added a ReentrantLock called logLock to protect the executionLog ArrayList. I modified the logExecution method so that adding messages to the log happens inside a protected critical section.
 
-**Testing approach**: 
+Challenges encountered: 
 
-**Time spent**: 
+The challenge was remembering that ArrayList is not thread-safe and can cause problems if multiple threads modify it at the same time.
 
+How I solved it: 
+
+I used logLock.lock() before adding a message to executionLog and logLock.unlock() inside a finally block.
+
+Testing approach: 
+
+I ran the program and verified that the program completed without ConcurrentModificationException or log-related errors.
+
+Time spent: 
+
+35 minutes
 ---
 
 ### Entry 4 - [Date, Time]
